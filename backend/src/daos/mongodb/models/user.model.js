@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true }, // HASH
     cart: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'carts' 
+        ref: 'carts'
     },
     orders: {
         type: [
@@ -23,7 +23,11 @@ const userSchema = new mongoose.Schema({
         default: []
     },
     role: { type: String, default: 'user' },
-    active: { type: Boolean, default: true }
+    active: { type: Boolean, default: true },
+    cart: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "carts" 
+    }
 });
 
 export const UserModel = mongoose.model(userCollection, userSchema);

@@ -1,6 +1,7 @@
 import { userRepository } from "../repositories/user.repository.js";
 import { createHash } from "../utils/hashFunctions.js";
 import { isValidPassword } from "../utils/hashFunctions.js";
+import { cartService } from "./cart.service.js";
 
 class UserService {
     getUserById = async (id) => {
@@ -47,6 +48,8 @@ class UserService {
             const existingUser = await userRepository.getUserByEmail(email);
             if (existingUser) throw new Error("El email ya está registrado");
 
+            const newCart = await cartService.create();
+
             const newUser = {
                 first_name,
                 last_name,
@@ -54,6 +57,7 @@ class UserService {
                 age,
                 password: createHash(password),
                 role,
+                cart: newCart._id,
                 active: true
             };
 

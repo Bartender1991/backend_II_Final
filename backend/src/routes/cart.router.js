@@ -5,6 +5,10 @@ import { passportCall } from "../middlewares/passport.middleware.js";
 
 const router = Router();
 
+router.post("/", passportCall('jwt'), cartController.create);
+
+router.post("/:cid/product/:pid", passportCall('jwt'), cartController.addProduct);
+
 // Ver un carrito específico
 router.get("/:cid", passportCall('jwt'), cartController.getCartById);
 
@@ -12,7 +16,7 @@ router.get("/:cid", passportCall('jwt'), cartController.getCartById);
 // Solo permitimos que un 'user' (o 'premium' si quisieras) finalice la compra
 router.post("/:cid/purchase", 
     passportCall('jwt'), 
-    authorization(['user', 'premium']), 
+    authorization(['user', 'premium', 'admin']), 
     cartController.purchase
 );
 

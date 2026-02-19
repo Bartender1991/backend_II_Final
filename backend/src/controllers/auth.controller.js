@@ -10,7 +10,12 @@ class AuthController {
             const user = await userService.loginUser(email, password);
 
             const token = jwt.sign(
-                { email: user.email, role: user.role, first_name: user.first_name },
+                {
+                    email: user.email,
+                    role: user.role,
+                    first_name: user.first_name,
+                    cart: user.cart
+                },
                 config.JWT,
                 { expiresIn: "24h" }
             );

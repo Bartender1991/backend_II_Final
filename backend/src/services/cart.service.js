@@ -12,7 +12,7 @@ class CartService {
         }
     }
 
-   purchase = async (cartId, userEmail) => {
+    purchase = async (cartId, userEmail) => {
         try {
             const cart = await cartRepository.getCartWithProducts(cartId);
             if (!cart) throw new Error("Carrito no encontrado");
@@ -31,9 +31,9 @@ class CartService {
                         price: product.price
                     });
                     totalAmount += product.price * item.quantity;
-                    
-                    await productService.updateProduct(product._id, { 
-                        stock: product.stock - item.quantity 
+
+                    await productService.update(product._id, {
+                        stock: product.stock - item.quantity
                     });
                 } else {
                     productsWithoutStock.push(item);
@@ -48,12 +48,13 @@ class CartService {
                 user: userEmail,
                 items: itemsToBuy,
                 total: totalAmount,
-                status: 'pending' 
+                status: 'pending'
             });
 
             const ticket = await ticketService.createTicket({
                 amount: totalAmount,
-                purchaser: userEmail
+                purchaser: userEmail,
+                items: itemsToBuy
             });
 
             await orderService.updateOrderStatus(order._id, 'completed');
@@ -68,6 +69,37 @@ class CartService {
 
         } catch (error) {
             throw new Error(`CartService Purchase Error: ${error.message}`);
+        }
+    }
+
+    create = async () => {
+        try {
+            // Llamamos al repository para crear un carrito vacío
+            return await cartRepository.create({ products: [] });
+        } catch (error) {
+            throw new Error(`Error al crear carrito en Service: ${error.message}`);
+        }
+    }
+
+    addProduct = async (cartId, productId, quantity = 1) => {
+        try {
+            const cart = await cartRepository.getById(cartId);
+            if (!cart) throw new Error("Carrito no encontrado");
+
+            // Buscamos si el producto ya está en el carrito
+            const productIndex = cart.products.findIndex(
+                p => p.product._id?.toString() === productId || p.product.toString() === productId
+            );
+
+            if (productIndex !== -1) {
+                cart.products[productIndex].quantity += quantity;
+            } else {
+                cart.products.push({ product: productId, quantity });
+            }
+
+            return await cartRepository.update(cartId, { products: cart.products });
+        } catch (error) {
+            throw new Error(`Error al agregar producto: ${error.message}`);
         }
     }
 }

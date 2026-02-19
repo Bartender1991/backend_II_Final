@@ -40,6 +40,26 @@ class CartController {
             return res.status(404).json({ status: "error", message: error.message });
         }
     }
+
+    create = async (req, res) => {
+        try {
+            const newCart = await cartService.create();
+            return res.status(201).json({ status: "success", payload: newCart });
+        } catch (error) {
+            return res.status(500).json({ status: "error", message: error.message });
+        }
+    }
+
+    addProduct = async (req, res) => {
+        try {
+            const { cid, pid } = req.params;
+            const { quantity } = req.body;
+            const result = await cartService.addProduct(cid, pid, quantity || 1);
+            return res.status(200).json({ status: "success", payload: result });
+        } catch (error) {
+            return res.status(400).json({ status: "error", message: error.message });
+        }
+    }
 }
 
 export const cartController = new CartController();

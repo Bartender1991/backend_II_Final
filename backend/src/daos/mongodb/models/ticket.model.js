@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const ticketCollection = 'tickets';
 
+// En TicketModel.js
 const ticketSchema = new mongoose.Schema({
     code: {
         type: String,
@@ -14,9 +15,10 @@ const ticketSchema = new mongoose.Schema({
     purchaser: { type: String, required: true },
     items: [
         {
-            product_name: String,
+            product_id: String,
+            name: String,
             quantity: Number,
-            price_at_purchase: Number 
+            price: Number
         }
     ]
 });

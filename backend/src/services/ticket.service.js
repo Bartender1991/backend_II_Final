@@ -9,7 +9,8 @@ class TicketService {
                 code: uuidv4(), // Genera un código único tipo '1b9d6bcd-b1d2...'
                 purchase_datetime: new Date(),
                 amount: ticketData.amount,
-                purchaser: ticketData.purchaser
+                purchaser: ticketData.purchaser,
+                items: ticketData.items
             };
             
             return await ticketRepository.create(newTicket);

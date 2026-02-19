@@ -5,18 +5,28 @@ import { passportCall } from "../middlewares/passport.middleware.js";
 
 const router = Router();
 
-router.post("/", passportCall('jwt'), cartController.create);
+//crear el carrito - logica implementada al momento del registro.
+router.post("/", 
+    passportCall('jwt'), 
+    authorization(['user']), 
+    cartController.create
+);
 
-router.post("/:cid/product/:pid", passportCall('jwt'), cartController.addProduct);
+//agregar productos al carrito 
+router.post("/:cid/product/:pid", 
+    passportCall('jwt'), 
+    authorization(['user']), 
+    cartController.addProduct
+);
 
 // Ver un carrito específico
 router.get("/:cid", passportCall('jwt'), cartController.getCartById);
 
 // 🛒 FINALIZAR COMPRA
-// Solo permitimos que un 'user' (o 'premium' si quisieras) finalice la compra
+// Solo permitimos que un 'user' finalice la compra
 router.post("/:cid/purchase", 
     passportCall('jwt'), 
-    authorization(['user', 'premium', 'admin']), 
+    authorization(['user']), 
     cartController.purchase
 );
 

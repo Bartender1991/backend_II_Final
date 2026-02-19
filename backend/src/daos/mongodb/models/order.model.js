@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+const orderCollection = 'orders';
+
 const orderSchema = new mongoose.Schema({
     user: { type: String, required: true },
     items: [
@@ -19,4 +21,4 @@ const orderSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-export const OrderModel = mongoose.model('orders', orderSchema);
+export const OrderModel = mongoose.model(orderCollection, orderSchema);

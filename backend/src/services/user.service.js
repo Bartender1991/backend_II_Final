@@ -23,6 +23,14 @@ class UserService {
         }
     }
 
+    getUserWithPassword = async (email) => {
+        try {
+            return await userRepository.getUserWithPassword(email);
+        } catch (error) {
+            throw new Error(`UserService Error: ${error.message}`);
+        }
+    }
+
     loginUser = async (email, password) => {
         try {
             const user = await userRepository.getUserWithPassword(email);
@@ -64,6 +72,16 @@ class UserService {
             return await userRepository.create(newUser);
         } catch (error) {
             throw new Error(`UserService Register Error: ${error.message}`);
+        }
+    }
+
+    updateUserPassword = async (uid, hashedPassword) => {
+        try {
+            // Usamos el userRepository que ya tenés importado ahí
+            // y el método update que viene del MongoDao
+            return await userRepository.update(uid, { password: hashedPassword });
+        } catch (error) {
+            throw new Error(`UserService Update Error: ${error.message}`);
         }
     }
 }

@@ -12,4 +12,7 @@ router.post("/login", authController.login);
 // El current sí necesita validar el token
 router.get("/current", passportCall('jwt'), authController.current);
 
+router.post("/request-reset", authController.requestPasswordReset);
+router.post("/reset-password", authController.resetPassword);
+
 export default router;

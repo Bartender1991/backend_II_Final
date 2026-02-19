@@ -1,6 +1,7 @@
 import { userService } from "../services/user.service.js";
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
+import UserDTO from "../dto/user.dto.js";
 
 class AuthController {
     login = async (req, res) => {
@@ -32,7 +33,8 @@ class AuthController {
 
     current = async (req, res) => {
         try {
-            return res.send({ status: "success", payload: req.user });
+            const userClear = new UserDTO(req.user);
+            return res.send({ status: "success", payload: userClear });
         } catch (error) {
             return res.status(500).send({ status: "error", message: error.message });
         }

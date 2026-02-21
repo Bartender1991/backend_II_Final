@@ -14,6 +14,8 @@ class AuthController {
 
             const user = await userService.loginUser(email, password);
 
+            const userDTO = new UserDTO(user);
+
             const token = jwt.sign(
                 {
                     email: user.email,
@@ -29,7 +31,7 @@ class AuthController {
             return res.cookie("coderCookieToken", token, {
                 maxAge: 60 * 60 * 1000 * 24, // 24hs
                 httpOnly: true
-            }).send({ status: "success", message: "Login exitoso", payload: user });
+            }).send({ status: "success", message: "Login exitoso", payload: userDTO });
 
         } catch (error) {
             return res.status(401).send({ status: "error", message: error.message });
@@ -62,37 +64,37 @@ class AuthController {
         }
     }
 
- requestPasswordReset = async (req, res) => {
-    try {
-        if (!req.body?.email) {
-            return res.status(400).send({ 
-                status: "error", 
-                message: "Falta el campo 'email' en el cuerpo de la petición." 
+    requestPasswordReset = async (req, res) => {
+        try {
+            if (!req.body?.email) {
+                return res.status(400).send({
+                    status: "error",
+                    message: "Falta el campo 'email' en el cuerpo de la petición."
+                });
+            }
+
+            const { email } = req.body;
+
+            const user = await userService.getUserByEmail(email);
+            if (!user) {
+                return res.status(404).send({ status: "error", message: "Usuario no encontrado" });
+            }
+
+            const token = crypto.randomBytes(20).toString('hex');
+
+            await resetTokenRepository.createToken(email, token);
+
+            await mailService.sendResetMail(email, token);
+
+            res.send({ status: "success", message: "Correo de recuperación enviado con éxito" });
+
+        } catch (error) {
+            res.status(500).send({
+                status: "error",
+                message: `Error en el proceso de recuperación: ${error.message}`
             });
         }
-
-        const { email } = req.body;
-        
-        const user = await userService.getUserByEmail(email);
-        if (!user) {
-            return res.status(404).send({ status: "error", message: "Usuario no encontrado" });
-        }
-
-        const token = crypto.randomBytes(20).toString('hex');
-
-        await resetTokenRepository.createToken(email, token);
-
-        await mailService.sendResetMail(email, token);
-
-        res.send({ status: "success", message: "Correo de recuperación enviado con éxito" });
-        
-    } catch (error) {
-        res.status(500).send({ 
-            status: "error", 
-            message: `Error en el proceso de recuperación: ${error.message}` 
-        });
     }
-}
 
     resetPassword = async (req, res) => {
         try {
